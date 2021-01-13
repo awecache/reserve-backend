@@ -4,7 +4,7 @@ const express = require('express');
 const cors = require('cors');
 
 const { startApp } = require('./utils');
-const { s3Routes, mysqlRoutes } = require('./routes');
+const { s3Routes, mysqlRoutes, mongoRoutes, authRoutes } = require('./routes');
 const { mysqlPool, mongoClient } = require('./database');
 
 const app = express();
@@ -15,11 +15,9 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json({ limit: '50mb' }));
 
 app.use(s3Routes);
-// app.use(formRoutes);
-app.use(mysqlRoutes);
-app.get('/test', (req, res) => {
-  res.send({ test: 'test' });
-});
+app.use('/api', mysqlRoutes);
+app.use('/api', mongoRoutes);
+app.use('/auth', authRoutes);
 
 //check db connections
 const mysqlConnection = (async () => {

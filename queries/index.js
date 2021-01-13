@@ -1,6 +1,20 @@
-const getOrdersQuery = 'SELECT * FROM northwind.orders';
+const getTimeslotsQuery = 'SELECT * FROM reserve_app.timeslot';
+const getTimeslotsByAvailabilityQuery =
+  'SELECT * FROM reserve_app.timeslot WHERE availability =?';
 
-// `INSERT INTO rsvp (name, email, phone, status, createdBy, createdDt) VALUES (?,?,?,?,?,CURDATE());`;
+const getTablesQuery = 'SELECT * FROM reserve_app.tables_for_reservation';
+const getTablesByMinMaxQuery =
+  'SELECT * FROM reserve_app.tables_for_reservation WHERE min_pax<=? and max_pax>=?';
+
+const getAllReservationsQuery = 'SELECT * FROM reserve_app.reservations';
+const getReservationsByDateTimeQuery = `SELECT * FROM reserve_app.reservations
+WHERE date = ? AND timeslot_id=?`;
+
+const insertReservationQuery = `INSERT INTO reserve_app.reservations (date, timeslot_id, pax, table_id, customer_id, book_ref) VALUES (?,?,?,?,?,?)`;
+
+const getUserWithIdAndPassQuery =
+  'select user_id from user where user_id = ? and password = sha1(?)';
+
 const addOrderQuery = `insert into orders (order_date, ship_name,tax_rate) 
 values
 (?,?,?)`;
@@ -19,7 +33,14 @@ const insertFileQuery = `insert into files (file_buffer) values (?)`;
 const getFileQuery = `select file_buffer from files where file_id = ?`;
 
 module.exports = {
-  getOrdersQuery,
+  getTimeslotsQuery,
+  getTimeslotsByAvailabilityQuery,
+  getTablesQuery,
+  getTablesByMinMaxQuery,
+  getAllReservationsQuery,
+  getReservationsByDateTimeQuery,
+  insertReservationQuery,
+  getUserWithIdAndPassQuery,
   addOrderQuery,
   addOrderDetailsQuery,
   getInsertedKeyQuery,
