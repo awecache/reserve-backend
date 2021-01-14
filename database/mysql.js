@@ -2,11 +2,6 @@ const mysql = require('mysql2/promise');
 const fs = require('fs');
 const path = require('path');
 
-console.log(
-  'dirname:',
-  path.join(__dirname, '..', 'certs', 'ca-certificate.crt')
-);
-
 const {
   MYSQL_SERVER,
   MYSQL_PORT,
