@@ -21,7 +21,8 @@ const insertReservationQuery = `INSERT INTO reserve_app.reservations (date, time
 const getUserWithIdAndPassQuery =
   'select user_id from reserve_app.user where user_id = ? and password = sha1(?)';
 
-const getUserByEmailQuery = 'select user_id from user where email = ? ';
+const getUserByEmailQuery =
+  'select user_id from reserve_app.user where email = ? ';
 
 const getReservationByBookRefQuery = `SELECT * FROM reserve_app.reservations_view
   WHERE book_ref=?`;
