@@ -10,6 +10,12 @@ const getAllReservationsQuery = 'SELECT * FROM reserve_app.reservations';
 const getReservationsByDateTimeQuery = `SELECT * FROM reserve_app.reservations
 WHERE date = ? AND timeslot_id=?`;
 
+const getReservationsByRangeQuery = `
+SELECT * FROM reserve_app.reservations_view
+WHERE date=? AND time between ? AND ? 
+ORDER BY time asc;
+`;
+
 const insertReservationQuery = `INSERT INTO reserve_app.reservations (date, timeslot_id, pax, table_id, customer_id, book_ref) VALUES (?,?,?,?,?,?)`;
 
 const getUserWithIdAndPassQuery =
@@ -41,6 +47,7 @@ module.exports = {
   getTablesByMinMaxQuery,
   getAllReservationsQuery,
   getReservationsByDateTimeQuery,
+  getReservationsByRangeQuery,
   insertReservationQuery,
   getUserWithIdAndPassQuery,
   getUserByEmailQuery,

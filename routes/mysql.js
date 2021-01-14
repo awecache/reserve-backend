@@ -1,5 +1,6 @@
 const express = require('express');
 const moment = require('moment');
+const nodemailer = require('nodemailer');
 
 const { mysqlPool } = require('../database');
 const {
@@ -8,6 +9,7 @@ const {
   getTablesQuery,
   getAllReservationsQuery,
   getReservationsByDateTimeQuery,
+  getReservationsByRangeQuery,
   getTablesByMinMaxQuery,
   insertReservationQuery
 } = require('../queries');
@@ -24,9 +26,13 @@ const getTimeslotsByAvailability = makeQuery(
 const getTables = makeQuery(getTablesQuery, mysqlPool);
 const getTablesByMinMax = makeQuery(getTablesByMinMaxQuery, mysqlPool);
 
-const getAllReservation = makeQuery(getAllReservationsQuery, mysqlPool);
-const getReservationByDateTime = makeQuery(
+const getAllReservations = makeQuery(getAllReservationsQuery, mysqlPool);
+const getReservationsByDateTime = makeQuery(
   getReservationsByDateTimeQuery,
+  mysqlPool
+);
+const getReservationsByRange = makeQuery(
+  getReservationsByRangeQuery,
   mysqlPool
 );
 const insertReservation = makeQuery(insertReservationQuery, mysqlPool);
@@ -72,20 +78,33 @@ router.get('/tables', async (req, res) => {
 });
 
 router.get('/reservations', async (req, res) => {
-  const { date, timeslot_id: timeslotId } = req.query;
+  const {
+    date,
+    timeslot_id: timeslotId,
+    start_time: startTime,
+    end_time: endTime
+  } = req.query;
   try {
-    if (!date && !timeslotId) {
-      const reservations = await getAllReservation();
+    if (date && startTime && endTime) {
+      const reservations = await getReservationsByRange([
+        date,
+        startTime,
+        endTime
+      ]);
 
+      return res.status(200).json(reservations);
+    }
+
+    if (date && timeslotId) {
+      const reservations = await getReservationsByDateTime([date, timeslotId]);
       return res.status(200).json(reservations);
     }
     // const dateMoment = moment(date);
     // console.log('dateMoment>>', dateMoment);
     // const nextDate = dateMoment.add(1, 'days').format('YYYY/MM/DD HH:mm:ss');
 
-    const reservations = await getReservationByDateTime([date, timeslotId]);
     // console.log('reservations>>', reservations);
-
+    const reservations = await getAllReservations();
     return res.status(200).json(reservations);
   } catch (error) {
     console.log('error', error);
@@ -110,6 +129,42 @@ router.post('/reservation', async (req, res) => {
     console.log('error: ', error);
     res.status(404).json(error);
   }
+});
+
+router.post('/send', (req, res) => {
+  const { name, contact, email, bookRef, date, time, pax } = req.body;
+  console.log('send req.body>>', req.body);
+
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD
+    }
+  });
+
+  const text = `Dear Mr/Mdm ${name}, here is your reservation of ${pax} pax on ${date}(${time}). Your booking reference is ${bookRef}.`;
+
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: 'Reservation Confirmation',
+    text: text,
+    replyTo: process.env.EMAIL
+  };
+
+  console.log('sending nodemail: ', req.body);
+
+  transporter.sendMail(mailOptions, (err, res) => {
+    if (err) {
+      console.error('there was an error: ', err);
+    } else {
+      console.log('here is the res: ', res);
+    }
+  });
+  res.json({ success: 'success' });
 });
 
 module.exports = router;
