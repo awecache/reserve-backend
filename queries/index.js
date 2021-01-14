@@ -23,6 +23,11 @@ const getUserWithIdAndPassQuery =
 
 const getUserByEmailQuery = 'select user_id from user where email = ? ';
 
+const getReservationByBookRefQuery = `SELECT * FROM reserve_app.reservations_view
+  WHERE book_ref=?`;
+
+const deleteReservationById = `DELETE FROM reserve_app.reservations WHERE id = ?`;
+
 const addOrderQuery = `insert into orders (order_date, ship_name,tax_rate) 
 values
 (?,?,?)`;
@@ -48,7 +53,9 @@ module.exports = {
   getAllReservationsQuery,
   getReservationsByDateTimeQuery,
   getReservationsByRangeQuery,
+  getReservationByBookRefQuery,
   insertReservationQuery,
+  deleteReservationById,
   getUserWithIdAndPassQuery,
   getUserByEmailQuery,
   addOrderQuery,
