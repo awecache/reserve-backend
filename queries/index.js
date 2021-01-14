@@ -19,7 +19,7 @@ ORDER BY time asc;
 const insertReservationQuery = `INSERT INTO reserve_app.reservations (date, timeslot_id, pax, table_id, customer_id, book_ref) VALUES (?,?,?,?,?,?)`;
 
 const getUserWithIdAndPassQuery =
-  'select user_id from user where user_id = ? and password = sha1(?)';
+  'select user_id from reserve_app.user where user_id = ? and password = sha1(?)';
 
 const getUserByEmailQuery = 'select user_id from user where email = ? ';
 
