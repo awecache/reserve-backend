@@ -3,7 +3,10 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const moment = require('moment');
 const { mysqlPool } = require('../database');
-const { getUserWithIdAndPassQuery } = require('../queries');
+const {
+  getUserWithIdAndPassQuery,
+  getUserByEmailQuery
+} = require('../queries');
 
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -129,7 +132,46 @@ router.post(
   }
 );
 
-//socal login
+//authenticate social user
+router.post('/login/social', async (req, res) => {
+  const { email } = req.body;
+  console.info(`email:  ${email}`);
+  const conn = await mysqlPool.getConnection();
+  try {
+    const [result, _] = await conn.query(getUserByEmailQuery, [email]);
+
+    if (result.length > 0) {
+      const username = result[0].user_id;
+      const loginTime = new Date().toString();
+      const timestamp = moment().unix();
+      const token = jwt.sign(
+        {
+          sub: username,
+          iss: 'reserve_app',
+          iat: timestamp,
+          //nbf: timestamp + 30,
+          exp: timestamp + 60 * 10,
+          data: {
+            loginTime: loginTime
+          }
+        },
+        TOKEN_SECRET
+      );
+
+      res.status(200);
+      res.type('application/json');
+      return res.json({ message: `Login in at ${new Date()}`, token });
+    }
+    return res.status(401).json({ error: 'Not Authorized' });
+  } catch (err) {
+    console.log(err);
+    return res.status(404).json(err);
+  } finally {
+    conn.release();
+  }
+});
+
+//socal login //not used
 router.get(
   '/google',
   passport.authenticate('google', {

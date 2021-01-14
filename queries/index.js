@@ -15,6 +15,8 @@ const insertReservationQuery = `INSERT INTO reserve_app.reservations (date, time
 const getUserWithIdAndPassQuery =
   'select user_id from user where user_id = ? and password = sha1(?)';
 
+const getUserByEmailQuery = 'select user_id from user where email = ? ';
+
 const addOrderQuery = `insert into orders (order_date, ship_name,tax_rate) 
 values
 (?,?,?)`;
@@ -41,6 +43,7 @@ module.exports = {
   getReservationsByDateTimeQuery,
   insertReservationQuery,
   getUserWithIdAndPassQuery,
+  getUserByEmailQuery,
   addOrderQuery,
   addOrderDetailsQuery,
   getInsertedKeyQuery,
