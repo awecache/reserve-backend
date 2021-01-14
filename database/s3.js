@@ -1,3 +1,4 @@
+//not used in the current app
 const aws = require('aws-sdk');
 // const config = require('../config.json');
 const { AWS_S3_HOSTNAME, AWS_S3_ACCESS_KEY, AWS_S3_SECRET } = process.env;
