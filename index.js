@@ -35,9 +35,9 @@ const mongoConnection = (async () => {
   return true;
 })();
 
-const s3Connection = new Promise((resolve, reject) => {
-  if (!!process.env.AWS_S3_ACCESS_KEY && !!process.env.AWS_S3_SECRET) resolve();
-  else reject('S3 keys not found');
-});
+// const s3Connection = new Promise((resolve, reject) => {
+//   if (!!process.env.AWS_S3_ACCESS_KEY && !!process.env.AWS_S3_SECRET) resolve();
+//   else reject('S3 keys not found');
+// });
 
-startApp(app, [mysqlConnection, mongoConnection, s3Connection]);
+startApp(app, [mysqlConnection, mongoConnection]);
